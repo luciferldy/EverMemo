@@ -53,6 +53,7 @@ public class StartActivity extends ActionBarActivity implements
 		LoaderCallbacks<Cursor>, OnClickListener, ItemLongPressedLisener,
 		onItemSelectLisener {
 
+	private static final String LOG_TAG = StartActivity.class.getSimpleName();
 	private MultiColumnListView mMemosGrid;
 	private Context mContext;
 	private MemosAdapter mMemosAdapter;
@@ -320,6 +321,7 @@ public class StartActivity extends ActionBarActivity implements
 
 		@Override
 		public boolean onActionItemClicked(ActionMode arg0, MenuItem menuItem) {
+			Logger.i(LOG_TAG, "onActionItemClicked");
 			switch (menuItem.getItemId()) {
 			case R.id.delete:
 				if (mMemosAdapter.getSelectedCount() == 0) {
@@ -354,6 +356,7 @@ public class StartActivity extends ActionBarActivity implements
 
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			Logger.i(LOG_TAG, "onCreateActionMode");
 			MenuInflater inflater = mode.getMenuInflater();
 			inflater.inflate(R.menu.context_menu, menu);
 			return true;
@@ -361,6 +364,7 @@ public class StartActivity extends ActionBarActivity implements
 
 		@Override
 		public void onDestroyActionMode(ActionMode arg0) {
+			Logger.i(LOG_TAG, "onDestroyActionMode");
 			mActionMode = null;
 			mContextMenu = null;
 			mMemosAdapter.setCheckMode(false);
@@ -368,6 +372,7 @@ public class StartActivity extends ActionBarActivity implements
 
 		@Override
 		public boolean onPrepareActionMode(ActionMode arg0, Menu menu) {
+			Logger.i(LOG_TAG, "onPrepareActionMode");
 			mContextMenu = menu;
 			updateActionMode();
 			return false;
@@ -382,12 +387,12 @@ public class StartActivity extends ActionBarActivity implements
 		if (mActionMode != null) {
 			return;
 		}
-		mActionMode = startSupportActionMode(mActionModeCallback);
+		startSupportActionMode(mActionModeCallback);
 	}
 
 	public void updateActionMode() {
 		if (mMemosAdapter.getSelectedCount() <= 1) {
-			mContextMenu.findItem(R.id.selected_counts).setTitle(
+ 			mContextMenu.findItem(R.id.selected_counts).setTitle(
 					mContext.getString(R.string.selected_one_count,
 							mMemosAdapter.getSelectedCount()));
 		} else {
@@ -395,6 +400,16 @@ public class StartActivity extends ActionBarActivity implements
 					mContext.getString(R.string.selected_more_count,
 							mMemosAdapter.getSelectedCount()));
 		}
+	}
+
+	@Override
+	public ActionMode startSupportActionMode(ActionMode.Callback callback) {
+		// Fix for bug https://code.google.com/p/android/issues/detail?id=159527
+		ActionMode mode = super.startSupportActionMode(callback);
+		if (mode != null) {
+			mode.invalidate();
+		}
+		return mode;
 	}
 
 	@Override

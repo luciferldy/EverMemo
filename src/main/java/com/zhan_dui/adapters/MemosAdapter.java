@@ -27,6 +27,7 @@ import com.zhan_dui.evermemo.MemoActivity;
 import com.zhan_dui.evermemo.R;
 import com.zhan_dui.sync.Evernote;
 import com.zhan_dui.utils.DateHelper;
+import com.zhan_dui.utils.Logger;
 
 public class MemosAdapter extends CursorAdapter implements OnClickListener,
 		OnLongClickListener {
@@ -228,6 +229,7 @@ public class MemosAdapter extends CursorAdapter implements OnClickListener,
 
 	@Override
 	public boolean onLongClick(View v) {
+		Logger.i("MemosAdapter", "onLongClick mCheckMode=" + mCheckMode);
 		if (mCheckMode == false) {
 			mItemLongPressedLisener.startActionMode();
 			setCheckMode(true);
